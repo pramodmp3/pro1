@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stackly Responsive Navbar</title>
+    <!-- Using Google Font: Inter -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* BASE STYLES & RESET */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+        padding-top: 80px; /* Space for the fixed navbar */
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      ul {
+        list-style: none;
+      }
+
+      /* COLOR PALETTE */
+      :root {
+        --primary-color: #1e3a8a; /* Dark Blue */
+        --accent-color: #f59e0b; /* Amber */
+        --text-light: #ffffff;
+        --text-dark: #333333;
+        --bg-light: #ffffff;
+      }
+
+      /* ---------------------------------- */
+      /* NAV BAR CONTAINER (Fixed/Sticky) */
+      /* ---------------------------------- */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        padding: 0 2rem;
+      }
+
+      .navbar-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      /* LOGO */
+      .logo a {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-light);
+        display: block;
+      }
+
+      .logo img {
+        height: 40px; /* Adjust height for the placeholder image */
+        width: auto;
+        border-radius: 4px;
+      }
+
+      /* ---------------------------------- */
+      /* DESKTOP MENU & LINKS */
+      /* ---------------------------------- */
+      .nav-links {
+        display: flex;
+        align-items: center;
+      }
+
+      .nav-item {
+        position: relative;
+        margin-left: 2rem;
+        padding: 0.5rem 0;
+      }
+
+      .nav-link {
+        display: flex; /* Use flex to align text and chevron horizontally */
+        align-items: center;
+        padding: 0.25rem 0;
+        color: var(--text-light);
+        font-weight: 600;
+        transition: color 0.3s ease;
+        position: relative;
+      }
+
+      /* Hover Effect for Links */
+      .nav-link:hover {
+        color: var(--accent-color);
+      }
+
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 3px;
+        background-color: var(--accent-color);
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      /* ---------------------------------- */
+      /* DESKTOP DROPDOWN */
+      /* ---------------------------------- */
+      .dropdown {
+        position: absolute;
+        top: 100%; /* Position right below the parent link */
+        left: 50%;
+        transform: translateX(-50%) translateY(10px); /* Slide down effect */
+        background-color: var(--bg-light);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        min-width: 180px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        padding: 0.5rem 0;
+      }
+
+      .nav-item:hover > .dropdown {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .dropdown-item a {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--text-dark);
+        font-weight: 400;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        border-radius: 4px;
+        /* Desktop: Center align text inside dropdown items */
+        text-align: center;
+      }
+
+      .dropdown-item a:hover {
+        background-color: #e2e8f0;
+        color: var(--primary-color);
+      }
+
+      /* Arrow for Dropdown Icon - Custom CSS Chevron */
+      .has-dropdown > .nav-link::after {
+        content: "";
+        width: 7px; /* Chevron size */
+        height: 7px;
+        border-right: 2px solid var(--text-light); /* Create half of the chevron */
+        border-bottom: 2px solid var(--text-light);
+        display: inline-block;
+        margin-left: 10px; /* Space after link text */
+        /* Initial state: pointing down (rotated 45 degrees) */
+        transform: translateY(-3px) rotate(45deg);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+        line-height: 1;
+        position: relative;
+      }
+
+      /* Change color and rotate on hover/open */
+      .nav-link:hover > .nav-link::after {
+        border-color: var(--accent-color);
+      }
+
+      .nav-item:hover > .nav-link::after {
+        /* Rotates 180 degrees down/up */
+        transform: translateY(0px) rotate(225deg);
+      }
+
+      /* ---------------------------------- */
+      /* MOBILE HAMBURGER ICON */
+      /* ---------------------------------- */
+      .hamburger {
+        display: none; /* Hidden on desktop */
+        width: 30px;
+        height: 30px;
+        position: relative;
+        cursor: pointer;
+        z-index: 1010;
+      }
+
+      .hamburger-line {
+        display: block;
+        position: absolute;
+        height: 3px;
+        width: 100%;
+        background: var(--text-light);
+        border-radius: 2px;
+        opacity: 1;
+        left: 0;
+        transform-origin: center;
+        transition: transform 0.3s ease, background 0.3s ease, width 0.3s ease,
+          top 0.3s ease;
+      }
+
+      /* Custom, unique-looking hamburger */
+      .hamburger .line1 {
+        top: 8px;
+        width: 80%;
+        left: 0;
+      }
+
+      .hamburger .line2 {
+        top: 18px;
+        width: 80%;
+        right: 0;
+      }
+
+      /* Hamburger to Close (X) Icon Animation */
+      .nav-open .hamburger .line1 {
+        top: 13px;
+        transform: rotate(45deg);
+        width: 100%;
+        left: 0;
+      }
+
+      .nav-open .hamburger .line2 {
+        top: 13px;
+        transform: rotate(-45deg);
+        width: 100%;
+        right: 0;
+      }
+
+      /* ---------------------------------- */
+      /* MOBILE MENU (Media Query) */
+      /* ---------------------------------- */
+      @media (max-width: 1024px) {
+        .navbar {
+          padding: 0 1rem;
+        }
+
+        .hamburger {
+          display: block; /* Show hamburger on mobile */
+        }
+
+        /* For mobile, make sure the link content and chevron are aligned properly */
+        .nav-item .nav-link {
+          justify-content: space-between; /* Push chevron to the right */
+          padding-right: 1rem;
+        }
+
+        .nav-links {
+          /* Mobile Menu Slide-in from left */
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 75%;
+          max-width: 300px;
+          height: 100vh;
+          background-color: var(--primary-color);
+          flex-direction: column;
+          padding: 5rem 0 1rem 0; /* Adjusted top padding */
+          align-items: flex-start;
+          transform: translateX(-100%);
+          transition: transform 0.4s ease-in-out;
+          overflow-y: auto;
+          box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-open .nav-links {
+          transform: translateX(0); /* Slide in */
+        }
+
+        .nav-item {
+          margin: 0;
+          width: 100%;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link {
+          padding: 1rem 1rem; /* Added horizontal padding to main link */
+          width: 100%;
+          color: var(--text-light);
+        }
+
+        /* Disable desktop hover effect on mobile */
+        .nav-link::after {
+          content: none;
+        }
+
+        /* Mobile chevron rotation */
+        .nav-item.mobile-open > .nav-link::after {
+          transform: translateY(0px) rotate(225deg);
+        }
+
+        /* Chevron appearance adjustment on mobile */
+        .has-dropdown > .nav-link::after {
+          border-color: var(
+            --text-light
+          ); /* Ensure color is visible against primary background */
+          margin-left: 0; /* Reset desktop margin */
+        }
+
+        /* ---------------------------------- */
+        /* MOBILE ACCORDION DROPDOWN */
+        /* ---------------------------------- */
+        .dropdown {
+          position: static; /* Stack vertically on mobile */
+          width: 100%;
+          box-shadow: none;
+          background-color: rgba(
+            0,
+            0,
+            0,
+            0.2
+          ); /* Darker background for contrast */
+          transform: none;
+          padding: 0;
+          margin-top: 0;
+          border-radius: 0;
+
+          /* Accordion effect setup */
+          max-height: 0;
+          overflow: hidden;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
+        }
+
+        .nav-item.mobile-open > .dropdown {
+          /* Animation with max-height trick */
+          max-height: 300px; /* Needs to be larger than content height */
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+        }
+
+        /* Ensure the list item takes full width for centering to work */
+        .dropdown-item {
+          width: 100%;
+        }
+
+        .dropdown-item a {
+          /* Left-aligning the submenu items and adding indentation */
+          padding: 0.75rem 1rem 0.75rem 2rem; /* Indentation on the left (2rem) */
+          color: var(--text-light);
+          background-color: transparent;
+          border-radius: 0;
+          text-align: left; /* Explicitly left-align */
+        }
+
+        .dropdown-item a:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    </style>
+  </head>
+  <body id="body">
+    <nav class="navbar" role="navigation" aria-label="Main Navigation">
+      <div class="navbar-content">
+        <!-- LOGO -->
+        <div class="logo">
+          <a href="#">
+            <img
+              src="https://placehold.co/120x40/1e3a8a/ffffff?text=STACKLY"
+              alt="Stackly Logo"
+            />
+          </a>
+        </div>
+
+        <!-- HAMBURGER ICON (Mobile Only) -->
+        <button
+          class="hamburger"
+          aria-expanded="false"
+          aria-controls="mobile-menu-links"
+          id="hamburger-button"
+        >
+          <span class="hamburger-line line1"></span>
+          <span class="hamburger-line line2"></span>
+        </button>
+
+        <!-- NAV LINKS (Desktop & Mobile Menu) -->
+        <ul class="nav-links" id="mobile-menu-links">
+          <!-- HOME2 is now the parent dropdown, containing HOME1 items -->
+          <li
+            class="nav-item has-dropdown"
+            role="menuitem"
+            aria-haspopup="true"
+          >
+            <a href="#" class="nav-link">
+              <span>HOME2</span>
+            </a>
+            <ul class="dropdown" role="menu">
+              <li class="dropdown-item" role="none">
+                <a href="#" role="menuitem">HOME1 - Item A</a>
+              </li>
+              <li class="dropdown-item" role="none">
+                <a href="#" role="menuitem">HOME1 - Item B (Longer Item)</a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="#" class="nav-link"><span>OUR SERVICE</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link"><span>CAREERS</span></a>
+          </li>
+
+          <li
+            class="nav-item has-dropdown"
+            role="menuitem"
+            aria-haspopup="true"
+          >
+            <a href="#" class="nav-link">
+              <span>ABOUT</span>
+            </a>
+            <ul class="dropdown" role="menu">
+              <li class="dropdown-item" role="none">
+                <a href="#" role="menuitem">ABOUT1</a>
+              </li>
+              <li class="dropdown-item" role="none">
+                <a href="#" role="menuitem">ABOUT2</a>
+              </li>
+              <li class="dropdown-item" role="none">
+                <a href="#" role="menuitem">Team & Values</a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="#" class="nav-link"><span>BLOG</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link"><span>CONTACT</span></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Placeholder content to show sticky effect -->
+    <div style="padding: 2rem; max-width: 800px; margin: 0 auto">
+      <h1>Welcome to Stackly</h1>
+      <p>
+        This is placeholder content to demonstrate the sticky navigation bar
+        effect. The navigation above is fully responsive and uses pure CSS for
+        styling and transitions.
+      </p>
+      <p>
+        Resize your browser window to see the desktop layout transform into the
+        mobile slide-in menu with the unique morphing hamburger icon and
+        accordion dropdowns.
+      </p>
+
+      <!-- Long content to force scrolling -->
+      <div style="height: 1500px; padding-top: 20px">
+        <h2>Scroll down...</h2>
+        <p>
+          The navigation bar remains fixed at the top, ensuring easy access to
+          links at all times.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum,
+          temporibus. Quam, velit. Fugiat eveniet voluptatibus nam, accusantium,
+          repellendus, laboriosam provident cumque vitae quisquam enim nihil
+          deserunt? Laudantium, error. Eum, voluptatibus.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const body = document.getElementById("body");
+        const hamburgerButton = document.getElementById("hamburger-button");
+        const mobileMenuLinks = document.getElementById("mobile-menu-links");
+        const dropdownLinks = document.querySelectorAll(
+          ".nav-item.has-dropdown > .nav-link"
+        );
+        const mediaQuery = window.matchMedia("(max-width: 1024px)");
+
+        // 1. HAMBURGER MENU TOGGLE FUNCTIONALITY
+        function toggleMobileMenu() {
+          const isMenuOpen = body.classList.contains("nav-open");
+
+          // Toggle the body class to trigger mobile menu slide and hamburger morph
+          body.classList.toggle("nav-open");
+          hamburgerButton.setAttribute("aria-expanded", !isMenuOpen);
+        }
+
+        hamburgerButton.addEventListener("click", toggleMobileMenu);
+
+        // 2. MOBILE DROPDOWN ACCORDION FUNCTIONALITY
+        function handleDropdownClick(event) {
+          // Prevent default navigation only if we are in mobile view
+          if (mediaQuery.matches) {
+            event.preventDefault();
+
+            const parentItem = this.closest(".nav-item");
+            const wasOpen = parentItem.classList.contains("mobile-open");
+
+            // Close all other open dropdowns (accordion behavior)
+            document
+              .querySelectorAll(".nav-item.has-dropdown")
+              .forEach((item) => {
+                if (item !== parentItem) {
+                  item.classList.remove("mobile-open");
+                }
+              });
+
+            // Toggle the clicked one
+            parentItem.classList.toggle("mobile-open", !wasOpen);
+
+            // Update ARIA attributes
+            this.setAttribute("aria-expanded", !wasOpen);
+          }
+        }
+
+        dropdownLinks.forEach((link) => {
+          link.addEventListener("click", handleDropdownClick);
+          // Initialize ARIA attribute for desktop and mobile states
+          link.setAttribute("aria-expanded", "false");
+        });
+
+        // 3. CLEANUP ON RESIZE (Desktop/Mobile Switch)
+        function handleMediaQueryChange(event) {
+          if (!event.matches) {
+            // If switching to DESKTOP view
+            body.classList.remove("nav-open"); // Close mobile menu
+            hamburgerButton.setAttribute("aria-expanded", "false");
+
+            // Ensure all mobile dropdown classes are removed to allow CSS :hover to take over
+            document
+              .querySelectorAll(".nav-item.has-dropdown")
+              .forEach((item) => {
+                item.classList.remove("mobile-open");
+                // Reset ARIA to desktop default (controlled by hover, but keeping 'false' is safest)
+                item
+                  .querySelector(".nav-link")
+                  .setAttribute("aria-expanded", "false");
+              });
+          }
+        }
+
+        // Listen for changes in the media query (when switching between desktop and mobile)
+        mediaQuery.addListener(handleMediaQueryChange);
+      });
+    </script>
+  </body>
+</html>
